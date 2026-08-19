@@ -16,9 +16,6 @@
   --color-border:#d9dee5;
   --color-border-strong:#aab3c0;
   --color-danger:#b3261e;
-  --color-ok:#1a7f4b;
-  --color-footer:#18263f;
-  --color-footer-band:#2aa3d4;
   --font-main:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;
   --a4-width:210mm;
   --radius:10px;
@@ -88,6 +85,12 @@ select:focus-visible, textarea:focus-visible, .tab-btn:focus-visible{
 
 /* ============ WORKSPACE / PAPER ============ */
 .workspace{ max-width:1000px; margin:26px auto 150px; padding:0 14px; }
+.hint-banner{
+  max-width:var(--a4-width); margin:0 auto 16px;
+  background:#fff8e8; border:1px solid #eddcae; color:#6b5311;
+  font-size:12.5px; padding:9px 14px; border-radius:8px;
+  display:flex; gap:8px; align-items:flex-start;
+}
 
 .form-section{ display:none; }
 .form-section.active{ display:block; animation:fadeIn .25s ease; }
@@ -171,14 +174,6 @@ select:focus-visible, textarea:focus-visible, .tab-btn:focus-visible{
 }
 .sub-title{ font-size:13px; font-weight:800; color:var(--color-primary); margin:12px 0 8px; }
 
-/* شارات الطرف: من يُسلِّم ومن يستلم */
-.party-badge{
-  display:inline-block; font-size:10px; font-weight:800; letter-spacing:.3px;
-  padding:3px 12px; border-radius:20px; margin:0 0 7px;
-}
-.badge-sender{ background:var(--color-gold-light); color:#8a6a1f; border:1px solid #e3c789; }
-.badge-receiver{ background:var(--color-primary-light); color:var(--color-primary); border:1px solid #b7c6de; }
-
 .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px 22px; }
 .grid-3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px 20px; }
 @media screen and (max-width:680px){
@@ -186,19 +181,6 @@ select:focus-visible, textarea:focus-visible, .tab-btn:focus-visible{
 }
 .field{ display:flex; flex-direction:column; gap:4px; min-width:0; }
 .field.full{ grid-column:1/-1; }
-
-/* شبكة مصغّرة داخل بلوك التوقيع (هوية/صفة/جوال/توقيع) */
-.mini-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; margin:2px 0; }
-@media screen and (max-width:480px){ .mini-grid{ grid-template-columns:1fr; } }
-
-/* حقل يظهر فقط عند اختيار نوع طرف معيّن (مندوب / شركة) */
-.field.party-reveal{ display:none; }
-
-/* وسم "اختياري" بجانب عنوان الحقل */
-.opt-tag{
-  display:inline-block; font-size:9.5px; font-weight:700; color:#8a93a3;
-  background:#eef0f3; border-radius:8px; padding:1px 7px; margin-right:5px; vertical-align:middle;
-}
 
 .field label{ font-size:12px; font-weight:700; color:var(--color-text-muted); }
 
@@ -263,60 +245,16 @@ textarea{ resize:vertical; min-height:64px; line-height:1.7; }
 .stamp-img{ max-height:98px; width:auto; opacity:.93; }
 .office-block{ text-align:center; }
 
-/* ============ FOOTER (مطابق لشريط الترويسة الرسمي) ============ */
-.doc-footer{ margin-top:22px; }
+/* footer */
+.doc-footer{ margin-top:24px; }
 .footer-bar{
-  background:var(--color-footer); color:#fff;
-  padding:7px 12px 6px; border-radius:7px 7px 0 0;
-  display:flex; flex-direction:column; gap:2px;
+  background:var(--color-primary); color:#fff;
+  font-size:11px; display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center;
+  padding:9px 14px; border-radius:7px 7px 0 0; text-align:center;
 }
-.fb-line{
-  display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
-  gap:2px 14px; font-size:10.6px; font-weight:700; line-height:1.55;
-}
-.fb-en{ direction:ltr; font-family:'Segoe UI',Arial,sans-serif; font-size:10px; font-weight:600; }
-.fb-item{ display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
-.fb-ic{ width:12px; height:12px; flex-shrink:0; display:block; }
-.fb-ic.pin{ fill:#31c1e8; }
-.fb-ic.tel, .fb-ic.wa, .fb-ic.globe{ fill:#fff; }
 .footer-site{
-  background:var(--color-footer-band); color:#fff;
-  display:flex; align-items:center; justify-content:center; gap:7px;
-  direction:ltr; font-size:12.5px; font-weight:800; letter-spacing:.5px;
-  padding:5px; border-radius:0 0 7px 7px;
-}
-
-/* ============ تصميم وتنفيذ (تذييل ثانوي مصغّر) ============ */
-.dev-credit{
-  margin-top:9px; padding-top:8px;
-  border-top:1px dashed var(--color-border);
-  display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
-  gap:5px 10px; font-size:9.8px; color:#9aa2ad;
-}
-.dev-credit .dc-name{ font-weight:700; color:#6b7280; }
-.dev-credit .dc-sep{ opacity:.5; }
-.dev-credit .dc-link{
-  display:inline-flex; align-items:center; gap:4px;
-  color:#9aa2ad; text-decoration:none; direction:ltr;
-}
-.dev-credit .dc-link:hover{ color:var(--color-primary); }
-.dc-ic{ width:11px; height:11px; fill:currentColor; flex-shrink:0; }
-
-/* ============ حقول الـ 10 أرقام ============ */
-.num-msg{
-  font-size:10.8px; font-weight:700; color:var(--color-text-muted);
-  min-height:15px; margin-top:2px; letter-spacing:.2px;
-}
-.num-msg.ok{ color:var(--color-ok); }
-.num-msg.bad{ color:var(--color-danger); }
-.num-msg.warn{ color:#8a6a1f; }
-input.num10{ letter-spacing:1px; }
-input.num-invalid{ border-bottom:2px solid var(--color-danger) !important; background:#fdf1f0 !important; }
-input.num-ok{ border-bottom:1.8px solid var(--color-ok) !important; }
-input.num-over{ animation:num-shake .38s ease; background:#fde3e0 !important; }
-@keyframes num-shake{
-  10%,90%{ transform:translateX(-1px); } 20%,80%{ transform:translateX(2px); }
-  30%,50%,70%{ transform:translateX(-3px); } 40%,60%{ transform:translateX(3px); }
+  text-align:center; background:var(--color-gold); color:#2a1f00;
+  font-size:11.5px; font-weight:800; padding:5px; border-radius:0 0 7px 7px; letter-spacing:.4px;
 }
 
 /* print-only helper spans (populated by JS before print) */
@@ -381,9 +319,8 @@ body.preview-mode .preview-close-btn{ display:block; }
 /* ============ PRINT ============ */
 @media print{
   @page{ size:A4; margin:6mm 8mm; }
-  *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
   html,body{ background:#fff; }
-  .no-print, .topbar, .actions-bar, .toast, .preview-close-btn{ display:none !important; }
+  .no-print, .topbar, .actions-bar, .toast, .hint-banner, .preview-close-btn{ display:none !important; }
   .workspace{ margin:0; padding:0; max-width:none; }
   .form-section{ display:none !important; }
   .form-section.active{ display:block !important; }
@@ -410,14 +347,10 @@ body.preview-mode .preview-close-btn{ display:block; }
   .doc-section h2{ padding:2.5px 8px; font-size:10.5px; margin-bottom:3px; border-radius:4px; }
   .sec-num{ font-size:8.5px; padding:1px 6px; border-radius:12px; }
   .sub-title{ margin:3px 0 2px; font-size:10px; }
-  .party-badge{ font-size:7px !important; padding:1.5px 8px !important; margin-bottom:2px !important; border-width:.6px !important; }
 
   /* الحقول مضغوطة */
   .field{ gap:1px; }
   .field label{ font-size:8.6px; margin:0; }
-  .mini-grid{ display:grid !important; grid-template-columns:1fr 1fr !important; gap:0 10px !important; margin:0 !important; }
-  .mini-grid .field label{ font-size:7.8px !important; }
-  .opt-tag{ font-size:6.2px !important; padding:0 4px !important; border-radius:5px !important; margin-right:3px !important; }
   input, select, textarea{
     background:transparent !important;
     padding:1px 2px !important;
@@ -456,35 +389,20 @@ body.preview-mode .preview-close-btn{ display:block; }
 
   /* التوقيعات — هذا القسم الوحيد الذي يجب ألا ينكسر */
   .signatures{
-    margin-top:3px !important;
-    padding-top:3px !important;
+    margin-top:5px !important;
+    padding-top:4px !important;
     gap:3px 18px !important;
     page-break-inside:avoid !important;
     break-inside:avoid !important;
     border-top-width:1px !important;
   }
-  .stamp-area{ min-height:36px !important; margin:1px 0 2px !important; }
-  .stamp-img{ max-height:50px !important; opacity:1 !important; }
+  .stamp-area{ min-height:45px !important; margin:1px 0 3px !important; }
+  .stamp-img{ max-height:60px !important; opacity:1 !important; }
 
-  /* التذييل — سطران بارتفاع مكافئ للسطر الواحد القديم */
-  .doc-footer{ margin-top:3px; }
-  .footer-bar{ padding:2.5px 8px 2px; gap:0; border-radius:3px 3px 0 0; }
-  .fb-line{ font-size:7.4px; gap:0 8px; line-height:1.28; }
-  .fb-en{ font-size:6.9px; }
-  .fb-ic{ width:7.5px; height:7.5px; }
-  .footer-site{ font-size:8.6px; padding:2px; border-radius:0 0 3px 3px; letter-spacing:0; gap:5px; }
-  .footer-site .fb-ic{ width:8.5px; height:8.5px; }
-
-  .dev-credit{ margin-top:3px !important; padding-top:2.5px !important; font-size:6.3px !important; gap:2px 7px !important; }
-  .dc-ic{ width:6.5px !important; height:6.5px !important; }
-
-  /* حقول الأرقام: بدون أي تلوين تحقق على الورق */
-  .num-msg{ display:none !important; }
-  input.num-invalid, input.num-ok{
-    border-bottom:0.6px dashed var(--color-border-strong) !important;
-    background:transparent !important;
-  }
-  input.num10{ letter-spacing:.5px; }
+  /* التذييل */
+  .doc-footer{ margin-top:5px; }
+  .footer-bar{ padding:3px 8px; font-size:8.8px; gap:2px 10px; border-radius:3px 3px 0 0; }
+  .footer-site{ font-size:9px; padding:2px; border-radius:0 0 3px 3px; letter-spacing:0; }
 
   /* إخفاء حقول الإدخال الأصلية وإظهار البديل النصي عند الطباعة */
   .date-input, .time-input, .nationality-select, .nationality-other{ display:none !important; }
