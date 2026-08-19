@@ -158,9 +158,6 @@
         el.value = '';
       });
       active.querySelectorAll('.print-only').forEach(function (el) { el.textContent = ''; });
-      active.querySelectorAll('.num-msg').forEach(function (el) { el.textContent = ''; el.className = 'num-msg no-print'; });
-      active.querySelectorAll('.num10').forEach(function (el) { el.classList.remove('num-invalid', 'num-ok'); });
-      active.querySelectorAll('.party-type-select').forEach(function (el) { el.selectedIndex = 0; syncPartyReveal(el); });
       applyDefaultDates(active);
       showToast('تم مسح النموذج');
     });
@@ -181,18 +178,6 @@
     return input.value || '';
   }
 
-  // نص التسمية نظيفًا بدون وسم "اختياري" (يُستخدم عند النسخ والتصدير)
-  function cleanLabelText(label) {
-    var clone = label.cloneNode(true);
-    clone.querySelectorAll('.opt-tag').forEach(function (t) { t.remove(); });
-    return clone.textContent.trim();
-  }
-
-  // هل هذا الحقل مخفي حاليًا بسبب نظام "نوع الطرف"؟
-  function isHiddenPartyField(f) {
-    return f.classList.contains('party-reveal') && f.style.display === 'none';
-  }
-
   var btnCopy = document.getElementById('btnCopy');
   if (btnCopy) {
     btnCopy.addEventListener('click', function () {
@@ -207,11 +192,10 @@
         var heading = section.querySelector('h2') || section.querySelector('h3.sub-title');
         if (heading) lines.push('# ' + heading.textContent.trim());
         section.querySelectorAll('.field').forEach(function (f) {
-          if (isHiddenPartyField(f)) return;
           var label = f.querySelector('label');
           var input = f.querySelector(':scope > input, :scope > select, :scope > textarea');
           if (!label || !input) return;
-          lines.push(cleanLabelText(label) + ': ' + getDisplayValue(input));
+          lines.push(label.textContent.trim() + ': ' + getDisplayValue(input));
         });
         section.querySelectorAll('.checkbox-line').forEach(function (cl) {
           var cb = cl.querySelector('.real-checkbox');
@@ -284,12 +268,11 @@
         var sub = block.querySelector('.sub-title');
         if (sub) body += '<tr><td colspan="2" style="padding:6px 10px;border:1px solid #ccc;background:#fbf3e2;font-weight:bold;">' + esc(sub.textContent.trim()) + '</td></tr>';
         block.querySelectorAll('.field').forEach(function (f) {
-          if (isHiddenPartyField(f)) return;
           var label = f.querySelector('label');
           var input = f.querySelector(':scope > input, :scope > select, :scope > textarea');
           if (!label || !input) return;
           var val = getDisplayValue(input) || '..........................';
-          body += '<tr><td style="width:34%;padding:6px 10px;border:1px solid #ccc;font-weight:bold;background:#fafbfc;">' + esc(cleanLabelText(label)) + '</td>' +
+          body += '<tr><td style="width:34%;padding:6px 10px;border:1px solid #ccc;font-weight:bold;background:#fafbfc;">' + esc(label.textContent.trim()) + '</td>' +
             '<td style="padding:6px 10px;border:1px solid #ccc;">' + esc(val) + '</td></tr>';
         });
       });
@@ -313,8 +296,7 @@
 
     body += '</table>';
     body += '<div style="margin-top:16px;text-align:center;background:#14335c;color:#fff;padding:8px;font-size:9.5pt;font-family:Arial,Tahoma,sans-serif;">' +
-      'الدوادمي - حي السلام - شارع الملك عبدالعزيز &nbsp;|&nbsp; 0116442444 &nbsp;|&nbsp; 0555113181 &nbsp;|&nbsp; ص.ب: 3529 &nbsp;|&nbsp; الرمز: 13121<br>' +
-      'Dawadmi - Alslam - King Abdulaziz Street &nbsp;|&nbsp; P.o.Box: 3529 &nbsp;|&nbsp; C: 13121 &nbsp;|&nbsp; www.alserhan.com' +
+      'الدواعمي - حي السلام - شارع الملك عبدالعزيز &nbsp;|&nbsp; 0116442444 &nbsp;|&nbsp; 0555113181 &nbsp;|&nbsp; www.alserhan.com' +
       '</div>';
 
     return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
@@ -345,113 +327,8 @@
     });
   }
 
-
   /* ---------------------------------------------------------
-     10) نظام "نوع الطرف" (موظف / مندوب / شركة) — يعمل عمومًا على
-     أي select بصنف party-type-select مرتبط بمجموعة حقول .party-reveal
-     عبر data-reveal-for / data-reveal-when
-  --------------------------------------------------------- */
-  function syncPartyReveal(sel) {
-    var group = sel.dataset.revealGroup;
-    if (!group) return;
-    document.querySelectorAll('.party-reveal[data-reveal-for="' + group + '"]').forEach(function (r) {
-      var show = r.dataset.revealWhen === sel.value;
-      r.style.display = show ? 'flex' : 'none';
-      if (!show) {
-        var inp = r.querySelector('input, select, textarea');
-        if (inp && inp.value) inp.value = '';
-      }
-    });
-  }
-  document.querySelectorAll('.party-type-select').forEach(function (sel) {
-    sel.addEventListener('change', function () { syncPartyReveal(sel); });
-    syncPartyReveal(sel);
-  });
-
-  /* ---------------------------------------------------------
-     11) حقول الأرقام: 10 خانات بالضبط (الهوية / الإقامة / الجوال)
-     - تقبل أرقامًا فقط (وتحوّل الأرقام العربية تلقائيًا)
-     - تتوقف عند الرقم العاشر وتنبّه المستخدم عند محاولة الزيادة
-  --------------------------------------------------------- */
-  var AR_DIGITS = /[\u0660-\u0669\u06F0-\u06F9]/g;
-  function toWesternDigits(s) {
-    return String(s).replace(AR_DIGITS, function (d) {
-      var c = d.charCodeAt(0);
-      return String(c >= 0x06F0 ? c - 0x06F0 : c - 0x0660);
-    });
-  }
-
-  function numFieldMessage(el, msgEl) {
-    var v = el.value;
-    var kind = el.dataset.kind || 'id';
-    el.classList.remove('num-invalid', 'num-ok');
-    msgEl.className = 'num-msg no-print';
-
-    if (v.length === 0) { msgEl.textContent = ''; return; }
-
-    if (v.length < 10) {
-      msgEl.textContent = '🛑 ناقص ' + (10 - v.length) + ' — لازم 10 أرقام (' + v.length + '/10)';
-      msgEl.classList.add('bad');
-      if (document.activeElement !== el) el.classList.add('num-invalid');
-      return;
-    }
-
-    // اكتملت 10 أرقام — تحقق شكلي إضافي (تنبيه فقط، لا يمنع الطباعة)
-    if (kind === 'phone' && v.slice(0, 2) !== '05') {
-      msgEl.textContent = '⚠️ تأكد: رقم الجوال السعودي يبدأ بـ 05';
-      msgEl.classList.add('warn');
-      return;
-    }
-    if (kind === 'id' && v[0] !== '1' && v[0] !== '2') {
-      msgEl.textContent = '⚠️ تأكد: رقم الهوية/الإقامة يبدأ بـ 1 أو 2';
-      msgEl.classList.add('warn');
-      return;
-    }
-    msgEl.textContent = '✓ 10/10';
-    msgEl.classList.add('ok');
-    el.classList.add('num-ok');
-  }
-
-  var overTimer;
-  document.querySelectorAll('.num10').forEach(function (el) {
-    var host = el.closest('.field') || el.parentNode;
-    var msgEl = document.createElement('span');
-    msgEl.className = 'num-msg no-print';
-    msgEl.setAttribute('aria-live', 'polite');
-    host.appendChild(msgEl);
-
-    el.setAttribute('maxlength', '10');
-
-    el.addEventListener('input', function () {
-      var raw = toWesternDigits(el.value);
-      var clean = raw.replace(/\D/g, '');
-      var overflow = clean.length > 10;
-      if (overflow) clean = clean.slice(0, 10);
-
-      if (clean !== el.value) {
-        var pos = el.selectionStart;
-        el.value = clean;
-        try { el.setSelectionRange(pos, pos); } catch (e) {}
-      }
-
-      if (overflow) {
-        el.classList.add('num-over');
-        clearTimeout(overTimer);
-        overTimer = setTimeout(function () { el.classList.remove('num-over'); }, 400);
-        showToast('🛑 الحقل يقبل 10 أرقام فقط');
-      }
-      numFieldMessage(el, msgEl);
-    });
-
-    el.addEventListener('blur', function () { numFieldMessage(el, msgEl); });
-    el.addEventListener('paste', function () {
-      setTimeout(function () { el.dispatchEvent(new Event('input')); }, 0);
-    });
-    numFieldMessage(el, msgEl);
-  });
-
-  /* ---------------------------------------------------------
-     12) تعبئة تاريخ اليوم افتراضيًا في الحقول المخصصة لذلك فقط
+     10) تعبئة تاريخ اليوم افتراضيًا في الحقول المخصصة لذلك فقط
   --------------------------------------------------------- */
   function applyDefaultDates(scopeEl) {
     var root = scopeEl || document;
